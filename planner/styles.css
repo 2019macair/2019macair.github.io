@@ -11,6 +11,12 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark-mode {
+    background-color: #333;
+    color: #f4f4f9;
 }
 
 .app-container {
@@ -38,6 +44,24 @@ header button {
     padding: 10px 20px;
     color: white;
     cursor: pointer;
+    border-radius: 5px;
+    margin-left: 10px;
+}
+
+header #toggleDarkMode {
+    background-color: #e76f51;
+}
+
+#searchSection {
+    width: 100%;
+    margin-top: 20px;
+}
+
+#searchInput {
+    width: 100%;
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ddd;
     border-radius: 5px;
 }
 
@@ -104,4 +128,22 @@ footer {
 
 #cancelTaskBtn {
     background-color: #e76f51;
+}
+
+#backupSection {
+    margin-top: 20px;
+}
+
+#exportTasksBtn,
+#importTasksInput {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #2a9d8f;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+#importTasksInput {
+    padding: 5px;
 }
