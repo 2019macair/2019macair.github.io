@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Enhanced To-Do List with task editing, completion, search, dark mode, and local storage backup">
+    <meta name="description" content="Enhanced To-Do List with priority levels, task sorting, comments, improved styling, and dark mode">
     <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.json">
     <title>Task Manager</title>
@@ -12,12 +12,22 @@
     <div class="app-container">
         <header>
             <h1>Task Manager</h1>
-            <button id="addTaskBtn">+ Add Task</button>
-            <button id="toggleDarkMode">Toggle Dark Mode</button>
+            <div class="header-buttons">
+                <button id="addTaskBtn">+ Add Task</button>
+                <button id="toggleDarkMode">Toggle Dark Mode</button>
+            </div>
         </header>
 
         <section id="searchSection">
             <input type="text" id="searchInput" placeholder="Search tasks...">
+        </section>
+
+        <section id="sortSection">
+            <label for="sortBy">Sort By:</label>
+            <select id="sortBy">
+                <option value="dueDate">Due Date</option>
+                <option value="priority">Priority</option>
+            </select>
         </section>
 
         <section id="taskSection">
@@ -43,8 +53,18 @@
                 <label for="taskDate">Due Date</label>
                 <input type="date" id="taskDate" required>
 
+                <label for="taskPriority">Priority</label>
+                <select id="taskPriority" required>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+
                 <label for="taskReminder">Reminder</label>
                 <input type="datetime-local" id="taskReminder">
+
+                <label for="taskComments">Comments</label>
+                <textarea id="taskComments" rows="4"></textarea>
 
                 <button type="submit">Save Task</button>
                 <button type="button" id="cancelTaskBtn">Cancel</button>
@@ -81,6 +101,7 @@
         const importTasksInput = document.getElementById('importTasksInput');
         const formTitle = document.getElementById('formTitle');
         const taskIndexInput = document.getElementById('taskIndex');
+        const sortBySelect = document.getElementById('sortBy');
 
         let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
         let showCompleted = false;
@@ -90,8 +111,19 @@
             taskList.innerHTML = '';
             const filteredTasks = tasks.filter(task => !task.completed || showCompleted);
             const searchQuery = searchInput.value.toLowerCase();
+            const sortBy = sortBySelect.value;
 
-            filteredTasks.filter(task =>
+            const sortedTasks = filteredTasks.sort((a, b) => {
+                if (sortBy === 'dueDate') {
+                    return new Date(a.dueDate) - new Date(b.dueDate);
+                } else if (sortBy === 'priority') {
+                    const priorityOrder = { 'low': 1, 'medium': 2, 'high': 3 };
+                    return priorityOrder[b.priority] - priorityOrder[a.priority];
+                }
+                return 0;
+            });
+
+            sortedTasks.filter(task =>
                 task.title.toLowerCase().includes(searchQuery) ||
                 task.category.toLowerCase().includes(searchQuery)
             ).forEach((task, index) => {
@@ -101,7 +133,9 @@
                     <h3>${task.title}</h3>
                     <p>Category: ${task.category}</p>
                     <p>Due Date: ${task.dueDate}</p>
+                    <p>Priority: ${task.priority}</p>
                     <p>Reminder: ${task.reminder ? task.reminder : 'None'}</p>
+                    <p>Comments: ${task.comments ? task.comments : 'None'}</p>
                     <p>Status: ${task.completed ? 'Completed' : 'Pending'}</p>
                     <button onclick="editTask(${index})">Edit</button>
                     <button onclick="toggleCompletion(${index})">
@@ -129,14 +163,18 @@
             const taskTitle = document.getElementById('taskTitle').value;
             const taskCategory = document.getElementById('taskCategory').value;
             const taskDate = document.getElementById('taskDate').value;
+            const taskPriority = document.getElementById('taskPriority').value;
             const taskReminder = document.getElementById('taskReminder').value;
+            const taskComments = document.getElementById('taskComments').value;
             const index = taskIndexInput.value;
 
             const newTask = {
                 title: taskTitle,
                 category: taskCategory,
                 dueDate: taskDate,
+                priority: taskPriority,
                 reminder: taskReminder,
+                comments: taskComments,
                 completed: false
             };
 
@@ -148,7 +186,9 @@
             document.getElementById('taskTitle').value = task.title;
             document.getElementById('taskCategory').value = task.category;
             document.getElementById('taskDate').value = task.dueDate;
+            document.getElementById('taskPriority').value = task.priority;
             document.getElementById('taskReminder').value = task.reminder;
+            document.getElementById('taskComments').value = task.comments;
             taskIndexInput.value = index;
             formTitle.textContent = 'Edit Task';
             taskForm.style.display = 'block';
@@ -177,6 +217,7 @@
         });
 
         searchInput.addEventListener('input', displayTasks);
+        sortBySelect.addEventListener('change', displayTasks);
 
         showCompletedBtn.addEventListener('click', function() {
             showCompleted = !showCompleted;
