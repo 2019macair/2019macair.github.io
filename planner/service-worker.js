@@ -1,26 +1,30 @@
 const CACHE_NAME = 'task-manager-cache-v1';
 const urlsToCache = [
     '/',
-    '/styles.css',
     '/index.html',
-    '/manifest.json'
+    '/styles.css',
+    '/manifest.json',
+    '/icon-192x192.png',
+    '/icon-512x512.png'
 ];
 
-// Install service worker
-self.addEventListener('install', function(event) {
+self.addEventListener('install', event => {
     event.waitUntil(
-        caches.open(CACHE_NAME).then(function(cache) {
-            console.log('Opened cache');
-            return cache.addAll(urlsToCache);
-        })
+        caches.open(CACHE_NAME)
+            .then(cache => {
+                return cache.addAll(urlsToCache);
+            })
     );
 });
 
-// Fetch requests
-self.addEventListener('fetch', function(event) {
+self.addEventListener('fetch', event => {
     event.respondWith(
-        caches.match(event.request).then(function(response) {
-            return response || fetch(event.request);
-        })
+        caches.match(event.request)
+            .then(response => {
+                if (response) {
+                    return response;
+                }
+                return fetch(event.request);
+            })
     );
 });
