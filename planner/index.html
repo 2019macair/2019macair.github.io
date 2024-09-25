@@ -77,7 +77,11 @@
         </section>
 
         <footer>
-            <p>Progressive Web App | Offline Support | Task Manager</p>
+            <ul>
+                <li><a href="https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps" target="_blank">Progressive Web App</a></li>
+                <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API" target="_blank">Offline Support</a></li>
+                <li><a href="https://github.com/your-repository" target="_blank">Task Manager Repository</a></li>
+            </ul>
         </footer>
     </div>
 
@@ -137,11 +141,11 @@
                     <p>Reminder: ${task.reminder ? task.reminder : 'None'}</p>
                     <p>Comments: ${task.comments ? task.comments : 'None'}</p>
                     <p>Status: ${task.completed ? 'Completed' : 'Pending'}</p>
-                    <button onclick="editTask(${index})">Edit</button>
-                    <button onclick="toggleCompletion(${index})">
+                    <button onclick="editTask(${index})" class="edit-btn">Edit</button>
+                    <button onclick="toggleCompletion(${index})" class="complete-btn">
                         ${task.completed ? 'Mark as Pending' : 'Mark as Completed'}
                     </button>
-                    <button onclick="deleteTask(${index})">Delete</button>
+                    <button onclick="deleteTask(${index})" class="delete-btn">Delete</button>
                 `;
                 taskList.appendChild(taskItem);
             });
@@ -217,6 +221,7 @@
         });
 
         searchInput.addEventListener('input', displayTasks);
+
         sortBySelect.addEventListener('change', displayTasks);
 
         showCompletedBtn.addEventListener('click', function() {
