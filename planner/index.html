@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A polished To-Do List with task categorization, due dates, reminders, and offline support">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <title>Task Manager</title>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Task Manager</h1>
+            <button id="addTaskBtn">+ Add Task</button>
+        </header>
+
+        <section id="taskSection">
+            <h2>Your Tasks</h2>
+            <div id="taskList"></div>
+        </section>
+
+        <section id="taskForm">
+            <h2>Create a New Task</h2>
+            <form id="taskInputForm">
+                <label for="taskTitle">Task Title</label>
+                <input type="text" id="taskTitle" required>
+
+                <label for="taskCategory">Category</label>
+                <select id="taskCategory" required>
+                    <option value="work">Work</option>
+                    <option value="personal">Personal</option>
+                    <option value="shopping">Shopping</option>
+                </select>
+
+                <label for="taskDate">Due Date</label>
+                <input type="date" id="taskDate" required>
+
+                <label for="taskReminder">Reminder</label>
+                <input type="datetime-local" id="taskReminder">
+
+                <button type="submit">Save Task</button>
+                <button type="button" id="cancelTaskBtn">Cancel</button>
+            </form>
+        </section>
+
+        <footer>
+            <p>Progressive Web App | Offline Support | Task Manager</p>
+        </footer>
+    </div>
+
+    <script>
+        // Service Worker for PWA and offline support
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js').then(function() {
+                console.log('Service Worker Registered');
+            });
+        }
+
+        // Task management logic
+        const taskForm = document.getElementById('taskForm');
+        const taskList = document.getElementById('taskList');
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        const cancelTaskBtn = document.getElementById('cancelTaskBtn');
+        const taskInputForm = document.getElementById('taskInputForm');
+
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+        // Display tasks
+        function displayTasks() {
+            taskList.innerHTML = '';
+            tasks.forEach((task, index) => {
+                const taskItem = document.createElement('div');
+                taskItem.classList.add('task-item');
+                taskItem.innerHTML = `
+                    <h3>${task.title}</h3>
+                    <p>Category: ${task.category}</p>
+                    <p>Due Date: ${task.dueDate}</p>
+                    <p>Reminder: ${task.reminder ? task.reminder : 'None'}</p>
+                    <button onclick="deleteTask(${index})">Delete</button>
+                `;
+                taskList.appendChild(taskItem);
+            });
+        }
+
+        // Add task
+        taskInputForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const taskTitle = document.getElementById('taskTitle').value;
+            const taskCategory = document.getElementById('taskCategory').value;
+            const taskDate = document.getElementById('taskDate').value;
+            const taskReminder = document.getElementById('taskReminder').value;
+
+            const newTask = {
+                title: taskTitle,
+                category: taskCategory,
+                dueDate: taskDate,
+                reminder: taskReminder
+            };
+
+            tasks.push(newTask);
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            displayTasks();
+            taskForm.style.display = 'none';
+        });
+
+        // Delete task
+        window.deleteTask = function(index) {
+            tasks.splice(index, 1);
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            displayTasks();
+        };
+
+        // Show task form
+        addTaskBtn.addEventListener('click', function() {
+            taskForm.style.display = 'block';
+        });
+
+        // Hide task form
+        cancelTaskBtn.addEventListener('click', function() {
+            taskForm.style.display = 'none';
+        });
+
+        // Initial display of tasks
+        displayTasks();
+    </script>
+</body>
+</html>
