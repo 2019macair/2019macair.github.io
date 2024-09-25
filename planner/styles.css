@@ -213,3 +213,21 @@ footer {
     color: white;
     border-radius: 5px;
 }
+
+footer ul {
+    list-style-type: none;
+}
+
+footer ul li {
+    margin: 5px 0;
+}
+
+footer ul li a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+footer ul li a:hover {
+    text-decoration: underline;
+}
